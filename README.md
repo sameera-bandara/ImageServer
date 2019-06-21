@@ -1,1 +1,0 @@
-# quality-assurance-image-server
