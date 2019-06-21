@@ -1,0 +1,8 @@
+---
+applications:
+- name: quality-assurance-image-service
+  memory: 768M
+  host: quality-assurance-image-service
+  path: target/quality-assurance-image-service-1.0.jar
+  services:
+  - imgdb
