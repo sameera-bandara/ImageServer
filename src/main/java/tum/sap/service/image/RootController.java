@@ -44,7 +44,7 @@ public class RootController {
         GridFSDBFile imageForOutput = gfsPhoto.findOne(image_name);
 
         if (imageForOutput == null)
-            return new ResponseEntity<Object>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Object>(null, HttpStatus.NO_CONTENT);
         else {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
