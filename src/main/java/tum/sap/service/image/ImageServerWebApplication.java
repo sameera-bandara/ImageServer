@@ -5,10 +5,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class HCPWebApplication extends SpringBootServletInitializer {
+public class ImageServerWebApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(HCPWebApplication.class).run(args);
+        new SpringApplicationBuilder(ImageServerWebApplication.class).run(args);
     }
 
 }
