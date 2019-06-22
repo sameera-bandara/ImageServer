@@ -34,13 +34,18 @@ public class RootController {
     @Autowired
     MongoTemplate mongoTemplate;
 
+    /**
+     * Endpoint to retrieve an image for given image name
+     *
+     * @param image_name
+     * @return the image for specified image_name with HttpStatus.OK. If the image is not found return HttpStatus.NO_CONTENT
+     */
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getImage(@RequestParam String image_name) {
 
         DB db = mongoTemplate.getDb();
-        DBCollection collection = mongoTemplate.getCollection("images");
 
-        GridFS gfsPhoto = new GridFS(db, "production_images");
+        GridFS gfsPhoto = new GridFS(db, "product_images");
         GridFSDBFile imageForOutput = gfsPhoto.findOne(image_name);
 
         if (imageForOutput == null)
@@ -58,23 +63,29 @@ public class RootController {
                     .contentType(MediaType.parseMediaType("application/octet-stream"))
                     .body(resource);
         }
-
     }
 
+    /**
+     * Endpoint to store an images
+     *
+     * @param file image file
+     * @return HttpStatus.CREATED if the image is saved successfully. If any error occured HttpStatus.INTERNAL_SERVER_ERROR is returned
+     */
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Object> saveImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Object> saveImage(@RequestParam("image") MultipartFile file) {
 
         DB db = mongoTemplate.getDb();
-        DBCollection collection = mongoTemplate.getCollection("images");
 
-        GridFS gfsPhoto = new GridFS(db, "production_images");
+        GridFS gfsPhoto = new GridFS(db, "product_images");
+
         GridFSInputFile gfsFile = null;
         try {
             gfsFile = gfsPhoto.createFile(file.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<Object>("AN error occurred while saving image", HttpStatus.NO_CONTENT);
+            log.error(e.getMessage());
+            return new ResponseEntity<Object>("AN error occurred while saving image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         gfsFile.setFilename(file.getOriginalFilename());
         gfsFile.save();
 
