@@ -3,6 +3,7 @@ package tum.sap.service.image;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
@@ -37,16 +38,16 @@ public class RootController {
     /**
      * Endpoint to retrieve an image for given image name
      *
-     * @param image_name
+     * @param key
      * @return the image for specified image_name with HttpStatus.OK. If the image is not found return HttpStatus.NO_CONTENT
      */
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> getImage(@RequestParam String image_name) {
+    public ResponseEntity<?> getImage(@RequestParam String key) {
 
         DB db = mongoTemplate.getDb();
 
         GridFS gfsPhoto = new GridFS(db, "product_images");
-        GridFSDBFile imageForOutput = gfsPhoto.findOne(image_name);
+        GridFSDBFile imageForOutput = gfsPhoto.findOne(key);
 
         if (imageForOutput == null)
             return new ResponseEntity<Object>(null, HttpStatus.NO_CONTENT);
@@ -55,7 +56,7 @@ public class RootController {
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
             headers.add("Pragma", "no-cache");
             headers.add("Expires", "0");
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + image_name);
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + key);
             InputStreamResource resource = new InputStreamResource(imageForOutput.getInputStream());
             return ResponseEntity.ok()
                     .headers(headers)
@@ -86,9 +87,11 @@ public class RootController {
             return new ResponseEntity<Object>("AN error occurred while saving image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        gfsFile.setFilename(file.getOriginalFilename());
+        //generate a unique identifier for image
+        UUID key = UUID.randomUUID();
+        gfsFile.setFilename(key.toString());
         gfsFile.save();
 
-        return new ResponseEntity<Object>("Image added successfully", HttpStatus.CREATED);
+        return new ResponseEntity<Object>(key.toString(), HttpStatus.CREATED);
     }
 }
