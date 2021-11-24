@@ -1,4 +1,4 @@
 # Quality-Assurance-Image-Server
 
-A Java wrapper to connect to managed MongoDB service in SAP
+A sample Java wrapper to connect to a managed MongoDB service instance in SAP
 
